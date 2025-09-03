@@ -3,20 +3,21 @@
 # Rapport de Pentest – Hypermarché
 
 ## 📑 Table des matières
-1. [Introduction](#introduction)
-2. [Méthodologie](#méthodologie)
-3. [Reconnaissance réseau](#reconnaissance-réseau)
-4. [Exploitation des services](#exploitation-des-services)
-   - [4.1 FTP (21/tcp)](#41-ftp-21tcp)
-   - [4.2 SSH (22/tcp)](#42-ssh-22tcp)
-   - [4.3 Apache (80/tcp)](#43-apache-80tcp)
-   - [4.4 CUPS (631/tcp)](#44-cups-631tcp)
-   - [4.5 MySQL (3306/tcp)](#45-mysql-3306tcp)
-   - [4.6 Samba (445/tcp)](#46-samba-445tcp)
-   - [4.7 Jetty / Apache Continuum (8080/tcp)](#47-jetty--apache-continuum-8080tcp)
-5. [Tableau récapitulatif](#tableau-récapitulatif)
-6. [Conclusion générale](#conclusion-générale)
-7. [Bilan](#)
+1. [Introduction](#1-introduction)  
+2. [Méthodologie](#2-méthodologie)  
+3. [Reconnaissance réseau](#3-reconnaissance-du-réseau)  
+4. [Exploitation des services](#4-exploitation-des-services)  
+   - [4.1 SSH (22/tcp – OpenSSH 6.6.1p1)](#41--ssh-22tcp--openssh-661p1)  
+   - [4.2 Apache (80/tcp – Apache HTTPD 2.4.7)](#42--apache-80tcp--apache-httpd-247)  
+   - [4.3 Samba (445/tcp – SMB 3.x–4.x)](#43--samba-445tcp--smb-3x4x)  
+   - [4.4 CUPS (631/tcp – Internet Printing Protocol)](#44--cups-631tcp--internet-printing-protocol)  
+   - [4.5 MySQL (3306/tcp)](#45--mysql-3306tcp)  
+   - [4.6 Jetty (8080/tcp – HTTP Proxy)](#46--jetty-8080tcp--http-proxy)  
+   - [4.7 FTP (ProFTPD 1.3.5 – mod_copy)](#47--ftp-proftpd-135--mod_copy)  
+5. [Tableau récapitulatif des services et vulnérabilités](#5-tableau-récapitulatif-des-services-et-vulnérabilités)  
+6. [Conclusion générale](#6--conclusion-générale)  
+7. [Recommandations globales](#7--recommandations-globales)  
+8. [Bilan](#8--bilan)
 
 ---
 
@@ -789,7 +790,7 @@ Grâce à l’exploitation de **mod_copy**, il a été possible d’obtenir un *
 
 
 ---
-# 5. Tableau récapitulatif des services et vulnérabilités
+## 5. Tableau récapitulatif des services et vulnérabilités
 
 | Port  | Service             | Version / Info                        | Résultat exploitation                          | Commentaire / Vulnérabilité |
 |-------|---------------------|---------------------------------------|-----------------------------------------------|-----------------------------|
@@ -873,7 +874,7 @@ L’analyse de l'ancien serveur de l'hypermarché a montré plusieurs points cri
 
 ---
 
-## ✅ Bilan
+## 8. ✅ Bilan
 Le système présente plusieurs **failles critiques exploitables** (SSH faible, phpMyAdmin root accessible, Continuum obsolète).  
 Même si certains services n’ont pas donné lieu à une compromission (CUPS, Samba, MySQL restreint), ils augmentent la surface d’attaque et nécessitent une vigilance accrue.  
 
