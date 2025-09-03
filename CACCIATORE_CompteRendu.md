@@ -1,5 +1,5 @@
 **| E4 - Metz - CACCIATORE Vincent |**  
-**| avec GRECO Clément |**  
+*avec GRECO Clément*  
 # Rapport de Pentest – Hypermarché
 
 ## 📑 Table des matières
@@ -725,14 +725,14 @@ L’attaquant peut exécuter n’importe quelle commande système avec les privi
 
 ### 4.7 🔹 FTP (ProFTPD 1.3.5 – mod_copy)
 
-## 🔎 Contexte
+#### 🔎 Contexte
 Le port **21/tcp (FTP)** exposait un service **ProFTPD 1.3.5**.  
 Cette version est vulnérable au module **`mod_copy`** qui permet de copier des fichiers arbitraires depuis et vers le système.  
 👉 Vulnérabilité référencée : **CVE-2015-3306**.
 
-## 🛠️ Exploitation
+#### 🛠️ Exploitation
 
-### Étape 1 – Vérification du service
+##### Étape 1 – Vérification du service
 ```bash
 nc 192.168.1.55 21
 ```
@@ -741,7 +741,7 @@ Réponse du serveur :
 ![alt text](image-23.png)
 
 
-### Étape 2 – Test avec commandes `SITE`
+##### Étape 2 – Test avec commandes `SITE`
 ProFTPD autorisait les commandes spéciales `SITE CPFR` et `SITE CPTO`, confirmant la présence du module vulnérable.
 
 ```bash
@@ -750,7 +750,7 @@ SITE CPTO /tmp/passwd.bak
 ```
 ✅ Réponse positive → le serveur a bien copié `/etc/passwd` → preuve d’arbitraire file copy.
 
-### Étape 3 – Exploitation avec Metasploit
+##### Étape 3 – Exploitation avec Metasploit
 Utilisation du module Metasploit **`unix/ftp/proftpd_modcopy_exec`** :
 
 ```msf
@@ -767,7 +767,7 @@ run
 - Upload d’un payload PHP malveillant dans `/var/www/html/odiel1.php`.  
 - Exécution du payload → **reverse shell obtenu**.
 
-### Étape 4 – Session obtenue
+##### Étape 4 – Session obtenue
 Shell interactif établi :
 
 ```bash
@@ -778,12 +778,12 @@ ls -la
 
 Le shell permettait d’exécuter des commandes avec les droits de l’utilisateur **www-data**.
 
-## 📌 Analyse
+#### 📌 Analyse
 - Vulnérabilité : **ProFTPD mod_copy (CVE-2015-3306)**.  
 - Impact : un attaquant distant peut lire ou écrire des fichiers arbitraires → exécution de code à distance possible.  
 - Gravité : **Critique** (accès initial sur le serveur).  
 
-## ✅ Conclusion
+#### ✅ Conclusion
 Le service FTP exposait une version vulnérable de **ProFTPD**.  
 Grâce à l’exploitation de **mod_copy**, il a été possible d’obtenir un **reverse shell** avec les droits de l’utilisateur `www-data`.  
 
@@ -792,16 +792,16 @@ Grâce à l’exploitation de **mod_copy**, il a été possible d’obtenir un *
 ---
 ## 5. Tableau récapitulatif des services et vulnérabilités
 
-| Port  | Service             | Version / Info                        | Résultat exploitation                          | Commentaire / Vulnérabilité |
-|-------|---------------------|---------------------------------------|-----------------------------------------------|-----------------------------|
-| 21    | FTP                 | vsFTPd 3.x                            | ✅ Accès avec `ftpuser:ftpuser123`             | Mot de passe faible → fuite de données |
-| 22    | SSH                 | OpenSSH 6.6.1p1 (Ubuntu 12.04)        | ✅ Bruteforce réussi `vagrant:vagrant`         | Identifiants par défaut actifs |
-| 80    | Apache HTTPD        | 2.4.7 (Ubuntu)                        | ✅ phpMyAdmin root sans mot de passe + SQLi Payroll App → root | Application vulnérable, exposition critique |
-| 445   | Samba               | Samba 3.x – 4.x                       | ⚠️ Enumération (`chewbacca`) mais ❌ pas d’accès | Info disclosure, pas de RCE |
-| 631   | CUPS                | CUPS 1.7                              | ❌ Exploits Metasploit échoués (Shellshock, info disclosure) | Interface exposée mais pas de compromission |
-| 3306  | MySQL               | MySQL 5.5                             | ⚠️ Bruteforce réussi mais bloqué (`host not allowed`) | Auth root restreinte à localhost |
-| 8080  | Jetty HTTP          | Jetty 8.1.7 + Apache Continuum 1.4.2  | ✅ Exploit Metasploit → session root Meterpreter | CVE RCE connues, compromission totale |
-| 8181  | Intermapper         | — (closed)                            | ❌ Non exploitable                             | Service inactif |
+| Port | Service      | Version / Info                       | Résultat exploitation                                             | Commentaire / Vulnérabilité                                      |
+| ---- | ------------ | ------------------------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 21   | FTP          | vsFTPd 3.x                           | ✅ Accès avec `ftpuser:ftpuser123`                                 | Mot de passe faible → fuite de données                           |
+| 22   | SSH          | OpenSSH 6.6.1p1 (Ubuntu 12.04)       | ✅ Bruteforce réussi `vagrant:vagrant`                             | Identifiants par défaut actifs                                   |
+| 80   | Apache HTTPD | 2.4.7 (Ubuntu)                       | ✅ phpMyAdmin root sans mot de passe + SQLi Payroll App → root     | Application vulnérable, compromission totale (Apache + MySQL)    |
+| 445  | Samba        | Samba 3.x – 4.x                      | ⚠️ Enumération (`chewbacca`) mais ❌ pas d’accès                   | Info disclosure, pas de RCE                                      |
+| 631  | CUPS         | CUPS 1.7                             | ❌ Exploits Metasploit échoués (Shellshock, info disclosure)       | Interface exposée mais pas de compromission                      |
+| 3306 | MySQL        | MySQL 5.5                            | ⚠️ Compromis **via Apache/phpMyAdmin** mais ❌ pas en accès direct | Auth root restreinte à localhost, mais contournée par phpMyAdmin |
+| 8080 | Jetty HTTP   | Jetty 8.1.7 + Apache Continuum 1.4.2 | ✅ Exploit Metasploit → session root Meterpreter                   | CVE RCE connues, compromission totale                            |
+| 8181 | Intermapper  | — (closed)                           | ❌ Non exploitable                                                 | Service inactif                                                  |
 
 ### 📝 Synthèse
 - **Exploités avec succès :**  
